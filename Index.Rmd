@@ -16,19 +16,6 @@ CRF=read.csv(paste0(Glink,Flink))
 str(CRF)
 ```
 ```{r}
-boxplot(CRF[,c('CarbonDioxide','IndustrialGrowth','Laborforce')])
-```
-```{r}
-CRF$CB_S=as.vector(scale(CRF$CarbonDioxide))
-CRF$IG_S=as.vector(scale(CRF$IndustrialGrowth))
-CRF$LF_S=as.vector(scale(CRF$Laborforce))
-```
-```{r}
-install.packages("sf")
-```
-
-
-```{r}
 linkMap="https://github.com/543-Van-Deliverables/Deliverable-3/raw/main/worldMap.geojson.txt" 
 library(sf)
 ```
@@ -39,10 +26,28 @@ mapWorld=read_sf(linkMap)
 head(mapWorld)
 ```
 ```{r}
-mapWorld_indexes=merge(mapWorld, #map first
-                   dataWorld, 
-                   by='ISO3') 
+mapWorld_indexes=merge(mapWorld, CRF, by='NAME') 
+str(mapWorld_indexes)
 ```
+```{r}
+library(ggplot2)
+baseMap= ggplot(data=mapWorld) + theme_classic() + geom_sf(fill='grey', color=NA)
+
+baseMap 
+```
+```{r}
+numericMapCD= baseMap + geom_sf(data=mapWorld_indexes,aes(fill=CarbonDioxide),color=NA)
+numericMapCD+ scale_fill_gradient(low = 'darkred',high= 'yellow')+ggtitle("Carbon Dioxide Emissions by Country")
+```
+```{r}
+numericMapIG= baseMap + geom_sf(data=mapWorld_indexes,aes(fill=IndustrialGrowth),color=NA)
+numericMapIG+ scale_fill_gradient(low = 'darkblue',high= 'lightblue') +ggtitle("Industrial Growth by Country")
+```
+```{r}
+numericMapLF= baseMap + geom_sf(data=mapWorld_indexes,aes(fill=Laborforce),color=NA)
+numericMapLF+ scale_fill_gradient(low = 'darkgreen',high= 'lightgreen') +ggtitle("Labor Force by Country")
+```
+
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
 
